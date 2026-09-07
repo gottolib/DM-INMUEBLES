@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Playfair_Display, Inter } from "next/font/google";
 import { Toaster } from "sonner";
+import { SITE_URL } from "@/lib/site-url";
 import "./globals.css";
 
 const playfair = Playfair_Display({
@@ -14,10 +15,8 @@ const inter = Inter({
   subsets: ["latin"],
 });
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
-
 export const metadata: Metadata = {
-  metadataBase: new URL(siteUrl),
+  metadataBase: new URL(SITE_URL),
   title: {
     default: "DM Inmobiliaria | Venta y alquiler de propiedades en Goya, Corrientes",
     template: "%s | DM Inmobiliaria",
