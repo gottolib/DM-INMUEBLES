@@ -10,7 +10,7 @@ Sitio web inmobiliario completo para **DM Inmobiliaria**: catálogo de propiedad
 
 - **Next.js 16** (App Router) + **TypeScript**
 - **Tailwind CSS 4** — paleta e identidad de marca DM Inmobiliaria (dorado / crema / charcoal)
-- **Prisma ORM** + **SQLite** en desarrollo (cambiás una línea para pasar a PostgreSQL en producción)
+- **Prisma ORM** + **PostgreSQL** (mismo motor en desarrollo y en producción — ver nota abajo)
 - **NextAuth (Auth.js) v5** — login del panel admin con usuario y contraseña
 - **Zod** — validación de formularios, en el navegador y en el servidor
 - **react-hook-form**, **react-dropzone** (subida de imágenes) y **@dnd-kit** (reordenar imágenes arrastrando)
@@ -39,29 +39,31 @@ npm install
 
 ### 3.2. Crear tu archivo de variables de entorno
 
-Copiá el archivo de ejemplo y completalo (para probar en tu computadora, los valores por defecto ya funcionan tal cual están):
+Copiá el archivo de ejemplo:
 
 ```bash
 cp .env.example .env
 ```
 
+> **Nota:** el proyecto usa **PostgreSQL** tanto en desarrollo como en producción (así evitamos sorpresas de que algo funcione distinto en tu compu y en Vercel). Necesitás una base Postgres también para desarrollar localmente — la más simple es crear una gratis en [neon.tech](https://neon.tech) (2 minutos, ver también el paso 8.2) y usar esa misma connection string acá. Si preferís no depender de internet para programar, también podés instalar PostgreSQL en tu compu o correrlo con Docker.
+
 Los valores más importantes de `.env` para desarrollo local:
 
 | Variable | Para qué sirve |
 |---|---|
-| `DATABASE_URL` | Dónde vive la base de datos. En desarrollo: `file:./dev.db` (un archivo SQLite, no necesitás instalar nada más) |
+| `DATABASE_URL` | Connection string de tu base PostgreSQL (Neon, local o Docker). Formato: `postgresql://usuario:password@host:5432/basededatos` |
 | `NEXTAUTH_SECRET` | Clave secreta para las sesiones del admin. Cualquier texto largo y random sirve en desarrollo |
 | `ADMIN_EMAIL` / `ADMIN_PASSWORD` | Con qué usuario y contraseña vas a entrar a `/admin` (se crean al correr el "seed", ver 3.4) |
 | `WHATSAPP_NUMBER` / `NEXT_PUBLIC_WHATSAPP_NUMBER` | Número de WhatsApp para el botón flotante y "Consultar por WhatsApp" (formato: código de país + número, sin espacios ni signos, ej. `5493777123456`) |
-| `STORAGE_PROVIDER` | Dónde se guardan las fotos que subís desde el admin. `local` para desarrollo (ver sección 8 para producción) |
+| `STORAGE_PROVIDER` | Dónde se guardan las fotos que subís desde el admin. `local` para desarrollo (ver sección 8 para producción con Cloudinary) |
 
-### 3.3. Crear la base de datos (migraciones de Prisma)
+### 3.3. Crear las tablas en la base de datos
 
 ```bash
-npx prisma migrate dev
+npx prisma db push
 ```
 
-Esto crea el archivo `prisma/dev.db` con todas las tablas (Propiedad, ImagenPropiedad, TipoPropiedad, Mensaje, AdminUser, ConfiguracionSitio).
+Esto crea todas las tablas (Propiedad, ImagenPropiedad, TipoPropiedad, Mensaje, AdminUser, ConfiguracionSitio) en la base que hayas puesto en `DATABASE_URL`. (`npm run build` también ejecuta este comando automáticamente antes de compilar, así que en Vercel se mantiene sincronizado en cada deploy sin que tengas que acordarte de correrlo a mano.)
 
 ### 3.4. Cargar datos de ejemplo (seed) y crear el usuario admin
 
@@ -94,7 +96,7 @@ Abrí [http://localhost:3000](http://localhost:3000) para el sitio público, y [
 | `npm run build` | Genera la versión de producción (valida que todo compile bien) |
 | `npm run start` | Corre la versión de producción ya compilada |
 | `npm run lint` | Revisa el código con ESLint |
-| `npm run db:migrate` | Crea/aplica migraciones cuando cambiás `prisma/schema.prisma` |
+| `npm run db:push` | Sincroniza la base de datos con `prisma/schema.prisma` cuando lo cambiás |
 | `npm run db:seed` | Vuelve a cargar los datos de ejemplo y el usuario admin |
 | `npm run db:studio` | Abre Prisma Studio, un panel visual para ver/editar la base de datos directamente |
 
@@ -127,7 +129,8 @@ Como no contábamos con el archivo de imagen del isotipo dentro de este entorno 
 
 Como pediste, ante decisiones no especificadas se priorizó siempre la opción más simple y mantenible:
 
-- **Prisma 6.x en vez de 7**: al momento de armar el proyecto, Prisma 7 cambió su forma de configurar la base de datos (ya no alcanza con `DATABASE_URL` en `schema.prisma`, pide un archivo de configuración aparte con "adaptadores" de conexión). Se fijó la versión 6.19.3 (la última estable con el modelo clásico) para que cambiar de SQLite a PostgreSQL siga siendo, como pediste, solo cambiar la variable de entorno y una palabra en `schema.prisma` (ver sección 8).
+- **Prisma 6.x en vez de 7**: al momento de armar el proyecto, Prisma 7 cambió su forma de configurar la base de datos (ya no alcanza con `DATABASE_URL` en `schema.prisma`, pide un archivo de configuración aparte con "adaptadores" de conexión). Se fijó la versión 6.19.3 (la última estable con el modelo clásico), que sigue soportando el enfoque simple de `DATABASE_URL` como variable de entorno.
+- **PostgreSQL en desarrollo y producción (en vez de SQLite en desarrollo)**: el proyecto arrancó con SQLite en desarrollo por simplicidad (no requiere instalar nada), pero se pasó a PostgreSQL en ambos entornos para evitar diferencias de comportamiento entre "anda en mi compu" y "anda en Vercel". Como es el mismo motor en los dos lados, para programar localmente necesitás una base Postgres (la más simple: una gratis en Neon, la misma que usás en producción).
 - **Server Actions en vez de API routes para el CRUD de propiedades/configuración del admin**: Next.js permite que los formularios llamen funciones del servidor directamente (`"use server"`), sin tener que escribir un endpoint REST a mano para cada acción. El resultado es el mismo (lógica de servidor, validada con Zod, protegida por sesión), con menos código para mantener. La subida de imágenes sí usa una API route propia (`/api/admin/properties/[id]/images`), porque ahí sí hace falta manejar archivos con `FormData`.
 - **Almacenamiento de imágenes**: por defecto usa el disco local (`/public/uploads/propiedades`), que es lo más simple para desarrollo. Está preparado para Cloudinary con solo cambiar `STORAGE_PROVIDER` (ver sección 8: es imprescindible si vas a desplegar en Vercel).
 - **Rate limiting del formulario de contacto**: es una limitación simple en memoria (máximo 5 envíos por minuto por IP). Frena spam básico; si el sitio recibe mucho tráfico y en un hosting con múltiples instancias (como Vercel), para un control más estricto convendría un servicio externo como Upstash Redis — no se agregó para no depender de un servicio pago adicional en un sitio de tráfico bajo/medio.
@@ -158,7 +161,7 @@ src/
 
 ## 8. Desplegar el sitio gratis en Vercel (paso a paso)
 
-Importante antes de empezar: en Vercel (hosting *serverless*), a diferencia de tu computadora, **el disco no es persistente ni escribible**. Eso afecta a dos cosas que en desarrollo local sí funcionan "gratis": la base de datos SQLite y la carpeta `public/uploads`. La solución (también gratis) es usar una base de datos PostgreSQL en la nube y Cloudinary para las imágenes. Son dos cuentas gratuitas más, ambas con planes gratuitos más que suficientes para un sitio de este tamaño.
+Importante antes de empezar: en Vercel (hosting *serverless*), a diferencia de tu computadora, **el disco no es persistente ni escribible**. Eso afecta a la carpeta `public/uploads`, donde en desarrollo local se guardan las fotos que subís desde el admin. La solución (gratis) es usar Cloudinary para las imágenes, y una base de datos PostgreSQL en la nube (Neon) para los datos. Son dos cuentas gratuitas, ambas con planes más que suficientes para un sitio de este tamaño.
 
 ### 8.1. Subir el código a GitHub
 
@@ -175,22 +178,9 @@ Creá un repositorio nuevo en GitHub y subí el código (GitHub te muestra los c
 ### 8.2. Crear la base de datos en Neon (PostgreSQL gratis)
 
 1. Entrá a [neon.tech](https://neon.tech) y creá una cuenta gratis.
-2. Creá un proyecto nuevo. Neon te va a dar una **connection string** (empieza con `postgresql://...`). Copiala.
-3. En tu proyecto, abrí `prisma/schema.prisma` y cambiá:
-   ```prisma
-   datasource db {
-     provider = "sqlite"
-     url      = env("DATABASE_URL")
-   }
-   ```
-   por:
-   ```prisma
-   datasource db {
-     provider = "postgresql"
-     url      = env("DATABASE_URL")
-   }
-   ```
-4. Guardá ese cambio y subilo a GitHub (`git add`, `git commit`, `git push`).
+2. Creá un proyecto nuevo. Neon te va a dar una **connection string** (empieza con `postgresql://...`). Copiala — la vas a usar como `DATABASE_URL` en el paso 8.4.
+
+(`prisma/schema.prisma` ya está configurado con `provider = "postgresql"`, así que no hace falta tocar nada de código para este paso.)
 
 ### 8.3. Crear la cuenta de Cloudinary (imágenes gratis)
 
@@ -218,18 +208,14 @@ Creá un repositorio nuevo en GitHub y subí el código (GitHub te muestra los c
    | `STORAGE_PROVIDER` | `cloudinary` |
    | `CLOUDINARY_URL` | El valor que copiaste en el paso 8.3 |
 
-4. Hacé clic en **Deploy**. Vercel instala dependencias, corre `prisma generate` (automático) y compila el sitio.
+4. Hacé clic en **Deploy**. Vercel instala dependencias, corre `prisma generate` y `prisma db push` (crean/actualizan las tablas en Neon automáticamente) y compila el sitio — no hace falta ningún paso manual de migraciones.
 
-### 8.5. Aplicar las migraciones y sembrar datos en la base de producción
+### 8.5. Sembrar datos de ejemplo en la base de producción (opcional)
 
-Desde tu computadora, apuntando a la base de Neon (una sola vez, o cada vez que cambies el modelo de datos):
+Si querés que el sitio arranque con las propiedades de ejemplo (en vez de vacío), corré esto una sola vez desde tu computadora apuntando a la base de Neon:
 
 ```bash
-# Usá temporalmente la DATABASE_URL de Neon para este comando:
-DATABASE_URL="postgresql://...tu-connection-string-de-neon..." npx prisma migrate deploy
-
-# Opcional: cargar datos de ejemplo también en producción
-DATABASE_URL="postgresql://...tu-connection-string-de-neon..." ADMIN_EMAIL="..." ADMIN_PASSWORD="..." npm run db:seed
+DATABASE_URL="postgresql://...tu-connection-string-de-neon..." ADMIN_EMAIL="tu-email" ADMIN_PASSWORD="tu-clave" npm run db:seed
 ```
 
 Con esto ya tenés el sitio funcionando en tu URL de Vercel, con base de datos en la nube y subida de imágenes funcionando a través de Cloudinary.
@@ -243,4 +229,4 @@ Con esto ya tenés el sitio funcionando en tu URL de Vercel, con base de datos e
 - **"Invalid `prisma...` invocation" o errores de Prisma Client desactualizado**: corré `npx prisma generate` y reiniciá `npm run dev`.
 - **No puedo entrar a `/admin`**: verificá que `ADMIN_EMAIL` / `ADMIN_PASSWORD` en tu `.env` sean los mismos que usaste la última vez que corriste `npm run db:seed` (el seed es lo que crea/actualiza ese usuario).
 - **Las imágenes que subo no se ven en producción (Vercel)**: revisá que `STORAGE_PROVIDER=cloudinary` y `CLOUDINARY_URL` estén cargadas en las variables de entorno de Vercel (sección 8.4). Con `STORAGE_PROVIDER=local` las imágenes solo persisten en tu computadora, no en Vercel.
-- **Cambié `prisma/schema.prisma` y no se refleja**: corré `npm run db:migrate` para crear una nueva migración.
+- **Cambié `prisma/schema.prisma` y no se refleja**: corré `npm run db:push` para sincronizar la base de datos (en Vercel esto ya pasa solo en cada deploy).
