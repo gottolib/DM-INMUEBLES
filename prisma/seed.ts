@@ -9,21 +9,10 @@
  * reemplazarlas.
  */
 import { PrismaClient, TipoOperacion, EstadoDestacado, EstadoPublicacion } from "@prisma/client";
-import bcrypt from "bcryptjs";
 import { slugify, generarCodigo } from "../src/lib/utils";
+import { crearAdminYConfigBase } from "../src/lib/bootstrap";
 
 const prisma = new PrismaClient();
-
-const TIPOS = [
-  { nombre: "Casa", slug: "casa" },
-  { nombre: "Departamento", slug: "departamento" },
-  { nombre: "Terreno", slug: "terreno" },
-  { nombre: "Campo", slug: "campo" },
-  { nombre: "Local Comercial", slug: "local" },
-  { nombre: "Oficina", slug: "oficina" },
-  { nombre: "Galpón", slug: "galpon" },
-  { nombre: "Quincho", slug: "quincho" },
-];
 
 const PLACEHOLDER_IDS = [1011, 1015, 1016, 1018, 1020, 1021, 1024, 1031, 1033, 1043, 1048, 1052];
 
@@ -233,51 +222,14 @@ const PROPIEDADES: Array<{
 async function main() {
   console.log("Sembrando base de datos de DM Inmobiliaria...");
 
-  // --- Usuario administrador de prueba ---
-  const adminEmail = process.env.ADMIN_EMAIL ?? "admin@dminmobiliaria.com";
-  const adminPassword = process.env.ADMIN_PASSWORD ?? "CambiarEstaClave123";
-  const adminNombre = process.env.ADMIN_NAME ?? "Administrador DM Inmobiliaria";
-  const passwordHash = await bcrypt.hash(adminPassword, 10);
-
-  await prisma.adminUser.upsert({
-    where: { email: adminEmail },
-    update: { passwordHash, nombre: adminNombre },
-    create: { email: adminEmail, passwordHash, nombre: adminNombre },
-  });
+  const { adminEmail } = await crearAdminYConfigBase();
   console.log(`Usuario admin listo: ${adminEmail}`);
+  console.log("Configuración del sitio y tipos de propiedad listos.");
 
-  // --- Configuración general del sitio ---
-  await prisma.configuracionSitio.upsert({
-    where: { id: "config" },
-    update: {},
-    create: {
-      id: "config",
-      telefono: "+54 3777 40-1234",
-      whatsapp: process.env.WHATSAPP_NUMBER ?? "5493777123456",
-      email: "contacto@dminmobiliaria.com.ar",
-      direccion: "Av. Colón 456, Goya, Corrientes",
-      facebookUrl: "https://facebook.com/",
-      instagramUrl: "https://instagram.com/",
-      horarios: "Lunes a viernes de 8 a 12 y de 16 a 20 hs. Sábados de 9 a 12 hs.",
-      textoQuienesSomos:
-        "DM Inmobiliaria es una empresa familiar dedicada a la compraventa y alquiler de propiedades en Goya y la región. Con años de trayectoria acompañando a nuestros clientes, combinamos atención personalizada, conocimiento del mercado local y transparencia en cada operación. Nuestro objetivo es ayudarte a encontrar el lugar ideal, ya sea tu próximo hogar, una inversión o un espacio para tu negocio.",
-    },
-  });
-  console.log("Configuración del sitio lista.");
+  const tipos = await prisma.tipoPropiedad.findMany();
+  const tiposCreados = new Map(tipos.map((t) => [t.slug, t.id]));
 
-  // --- Tipos de propiedad ---
-  const tiposCreados = new Map<string, string>();
-  for (const tipo of TIPOS) {
-    const creado = await prisma.tipoPropiedad.upsert({
-      where: { slug: tipo.slug },
-      update: { nombre: tipo.nombre },
-      create: tipo,
-    });
-    tiposCreados.set(tipo.slug, creado.id);
-  }
-  console.log(`${TIPOS.length} tipos de propiedad listos.`);
-
-  // --- Propiedades de ejemplo ---
+  // --- Propiedades de ejemplo (solo para desarrollo local) ---
   let count = 0;
   for (const [index, p] of PROPIEDADES.entries()) {
     const tipoPropiedadId = tiposCreados.get(p.tipoSlug);

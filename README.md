@@ -210,15 +210,26 @@ Creá un repositorio nuevo en GitHub y subí el código (GitHub te muestra los c
 
 4. Hacé clic en **Deploy**. Vercel instala dependencias, corre `prisma generate` y `prisma db push` (crean/actualizan las tablas en Neon automáticamente) y compila el sitio — no hace falta ningún paso manual de migraciones.
 
-### 8.5. Sembrar datos de ejemplo en la base de producción (opcional)
+### 8.5. Crear tu usuario administrador en producción
 
-Si querés que el sitio arranque con las propiedades de ejemplo (en vez de vacío), corré esto una sola vez desde tu computadora apuntando a la base de Neon:
+El `prisma db push` del paso anterior solo crea las **tablas** vacías — todavía no existe ningún usuario para entrar a `/admin`. Tenés dos formas de crearlo, sin necesitar Node ni git en tu compu:
+
+**Opción A — endpoint de primer arranque (más simple):**
+
+1. En Vercel, agregá la variable de entorno `SETUP_SECRET` con cualquier valor largo que inventes (por ejemplo, generalo en [este generador](https://1password.com/password-generator) o con `openssl rand -hex 16` si tenés terminal). Volvé a desplegar para que tome la variable.
+2. Visitá en el navegador: `https://tu-sitio.vercel.app/api/setup?token=EL-VALOR-QUE-PUSISTE`
+3. Si ves un mensaje `{"ok": true, ...}`, ya podés entrar a `/admin/login` con el `ADMIN_EMAIL`/`ADMIN_PASSWORD` que cargaste en el paso 8.4. Esto también te sirve para "resetear" la contraseña más adelante: cambiás `ADMIN_PASSWORD` en Vercel, volvés a desplegar, y visitás esta misma URL de nuevo.
+4. Por seguridad, una vez que entraste al admin, borrá la variable `SETUP_SECRET` de Vercel (así nadie más puede volver a llamar a esa URL).
+
+**Opción B — desde tu computadora** (si en algún momento instalás Node para desarrollar, ver sección 3):
 
 ```bash
 DATABASE_URL="postgresql://...tu-connection-string-de-neon..." ADMIN_EMAIL="tu-email" ADMIN_PASSWORD="tu-clave" npm run db:seed
 ```
 
-Con esto ya tenés el sitio funcionando en tu URL de Vercel, con base de datos en la nube y subida de imágenes funcionando a través de Cloudinary.
+Esta opción además carga 8 propiedades de ejemplo (con fotos placeholder) para que el sitio no arranque vacío mientras cargás las tuyas; la Opción A no las carga (arranca directo con el catálogo vacío, listo para tus propiedades reales).
+
+Con cualquiera de las dos, ya tenés el sitio funcionando en tu URL de Vercel, con base de datos en la nube y subida de imágenes funcionando a través de Cloudinary.
 
 > Cada vez que hagas `git push` a la rama principal, Vercel vuelve a desplegar el sitio automáticamente.
 
