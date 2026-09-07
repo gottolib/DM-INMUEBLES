@@ -1,0 +1,139 @@
+// Schema de la base de datos de DM Inmobiliaria.
+// En desarrollo usa SQLite (un solo archivo, cero configuración).
+// Para producción, cambiá DATABASE_URL en .env por una de PostgreSQL
+// y cambiá el "provider" de abajo a "postgresql" (ver README.md).
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum TipoOperacion {
+  VENTA
+  ALQUILER
+  ALQUILER_TEMPORARIO
+}
+
+enum EstadoDestacado {
+  DESTACADA
+  EXCELENTE
+  BUENA
+  NINGUNO
+}
+
+enum EstadoPublicacion {
+  ACTIVA
+  INACTIVA
+  VENDIDA
+  ALQUILADA
+  BORRADOR
+}
+
+model Propiedad {
+  id     String @id @default(cuid())
+  codigo String @unique
+  slug   String @unique
+
+  titulo      String
+  descripcion String
+
+  tipoOperacion   TipoOperacion
+  estadoDestacado EstadoDestacado @default(NINGUNO)
+
+  tipoPropiedad   TipoPropiedad @relation(fields: [tipoPropiedadId], references: [id])
+  tipoPropiedadId String
+
+  direccion String?
+  zona      String?
+  localidad String  @default("Goya, Corrientes")
+  latitud   Float?
+  longitud  Float?
+
+  superficieTotal   Float?
+  superficieCubierta Float?
+  ambientes         Int?
+  dormitorios       Int?
+  banos             Int?
+  cochera           Boolean @default(false)
+  antiguedad        Int?
+
+  precio          Float?
+  moneda          String  @default("USD")
+  consultarPrecio Boolean @default(false)
+
+  estadoPublicacion EstadoPublicacion @default(BORRADOR)
+  destacadaHome     Boolean           @default(false)
+
+  imagenes ImagenPropiedad[]
+  mensajes Mensaje[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([tipoOperacion])
+  @@index([estadoPublicacion])
+  @@index([tipoPropiedadId])
+}
+
+model ImagenPropiedad {
+  id          String  @id @default(cuid())
+  propiedad   Propiedad @relation(fields: [propiedadId], references: [id], onDelete: Cascade)
+  propiedadId String
+  url         String
+  orden       Int     @default(0)
+  esPortada   Boolean @default(false)
+
+  createdAt DateTime @default(now())
+
+  @@index([propiedadId])
+}
+
+model TipoPropiedad {
+  id     String @id @default(cuid())
+  nombre String @unique
+  slug   String @unique
+
+  propiedades Propiedad[]
+}
+
+model Mensaje {
+  id          String     @id @default(cuid())
+  nombre      String
+  telefono    String?
+  email       String?
+  mensaje     String
+  propiedad   Propiedad? @relation(fields: [propiedadId], references: [id], onDelete: SetNull)
+  propiedadId String?
+  leido       Boolean    @default(false)
+
+  createdAt DateTime @default(now())
+
+  @@index([leido])
+}
+
+model AdminUser {
+  id           String @id @default(cuid())
+  email        String @unique
+  passwordHash String
+  nombre       String
+
+  createdAt DateTime @default(now())
+}
+
+model ConfiguracionSitio {
+  id                 String @id @default("config")
+  telefono           String @default("")
+  whatsapp           String @default("")
+  email              String @default("")
+  direccion          String @default("")
+  facebookUrl        String @default("")
+  instagramUrl       String @default("")
+  horarios           String @default("")
+  textoQuienesSomos  String @default("")
+
+  updatedAt DateTime @updatedAt
+}
