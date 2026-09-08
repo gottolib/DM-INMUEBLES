@@ -4,6 +4,7 @@ import { PropertyForm } from "@/components/admin/PropertyForm";
 import { getTodosTiposPropiedad } from "@/lib/properties";
 import { actualizarPropiedadAction } from "@/app/admin/propiedades/actions";
 import { prisma } from "@/lib/prisma";
+import { getConfigSubidaCliente } from "@/lib/storage";
 
 export const metadata: Metadata = { title: "Editar propiedad | Admin" };
 
@@ -42,7 +43,7 @@ export default async function EditarPropiedadPage({ params, searchParams }: Page
         </p>
       )}
       <div className="mt-6">
-        <PropertyForm tipos={tipos} propiedad={propiedad} action={actualizarConId} />
+        <PropertyForm tipos={tipos} propiedad={propiedad} action={actualizarConId} configSubida={getConfigSubidaCliente()} />
       </div>
     </div>
   );

@@ -7,13 +7,58 @@ interface RouteParams {
   params: Promise<{ id: string }>;
 }
 
+async function crearImagenes(propiedadId: string, urls: string[]) {
+  const propiedad = await prisma.propiedad.findUnique({ where: { id: propiedadId }, include: { imagenes: true } });
+  if (!propiedad) return null;
+
+  let siguienteOrden = propiedad.imagenes.length;
+  const sinPortadaAun = propiedad.imagenes.every((img) => !img.esPortada);
+
+  const creadas = [];
+  for (const url of urls) {
+    const imagen = await prisma.imagenPropiedad.create({
+      data: {
+        propiedadId,
+        url,
+        orden: siguienteOrden,
+        esPortada: sinPortadaAun && siguienteOrden === 0,
+      },
+    });
+    creadas.push(imagen);
+    siguienteOrden++;
+  }
+  return creadas;
+}
+
 // Sube una o varias imágenes para una propiedad (drag & drop desde el admin).
+//
+// Acepta dos formatos de body:
+// - multipart/form-data con campo "files": usado con STORAGE_PROVIDER=local,
+//   el archivo se recibe acá y se guarda en disco (ver src/lib/storage.ts).
+// - application/json con { urls: string[] }: usado con STORAGE_PROVIDER=cloudinary,
+//   donde el navegador ya subió el archivo directo a Cloudinary (para no
+//   chocar con el límite de tamaño de request de las funciones serverless
+//   de Vercel) y acá solo guardamos la URL final en la base de datos.
 export async function POST(req: NextRequest, { params }: RouteParams) {
   const session = await auth();
   if (!session) return NextResponse.json({ error: "No autorizado." }, { status: 401 });
 
   const { id } = await params;
-  const propiedad = await prisma.propiedad.findUnique({ where: { id }, include: { imagenes: true } });
+  const contentType = req.headers.get("content-type") ?? "";
+
+  if (contentType.includes("application/json")) {
+    const body = await req.json().catch(() => null);
+    const urls: unknown = body?.urls;
+    if (!Array.isArray(urls) || urls.some((u) => typeof u !== "string" || !u.startsWith("https://"))) {
+      return NextResponse.json({ error: "Formato inválido." }, { status: 400 });
+    }
+
+    const creadas = await crearImagenes(id, urls as string[]);
+    if (!creadas) return NextResponse.json({ error: "Propiedad no encontrada." }, { status: 404 });
+    return NextResponse.json({ imagenes: creadas });
+  }
+
+  const propiedad = await prisma.propiedad.findUnique({ where: { id }, select: { id: true } });
   if (!propiedad) return NextResponse.json({ error: "Propiedad no encontrada." }, { status: 404 });
 
   const formData = await req.formData();
@@ -32,24 +77,12 @@ export async function POST(req: NextRequest, { params }: RouteParams) {
     }
   }
 
-  let siguienteOrden = propiedad.imagenes.length;
-  const sinPortadaAun = propiedad.imagenes.every((img) => !img.esPortada);
-
-  const creadas = [];
+  const urls: string[] = [];
   for (const archivo of archivos) {
-    const url = await guardarImagen(archivo);
-    const imagen = await prisma.imagenPropiedad.create({
-      data: {
-        propiedadId: id,
-        url,
-        orden: siguienteOrden,
-        esPortada: sinPortadaAun && siguienteOrden === 0,
-      },
-    });
-    creadas.push(imagen);
-    siguienteOrden++;
+    urls.push(await guardarImagen(archivo));
   }
 
+  const creadas = await crearImagenes(id, urls);
   return NextResponse.json({ imagenes: creadas });
 }
 

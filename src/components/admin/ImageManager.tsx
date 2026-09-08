@@ -15,6 +15,7 @@ import { SortableContext, arrayMove, rectSortingStrategy, useSortable } from "@d
 import { CSS } from "@dnd-kit/utilities";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import type { ConfigSubidaCliente } from "@/lib/storage";
 
 interface ImagenItem {
   id: string;
@@ -22,7 +23,47 @@ interface ImagenItem {
   esPortada: boolean;
 }
 
-export function ImageManager({ propiedadId, imagenesIniciales }: { propiedadId: string; imagenesIniciales: ImagenItem[] }) {
+interface ImageManagerProps {
+  propiedadId: string;
+  imagenesIniciales: ImagenItem[];
+  configSubida: ConfigSubidaCliente;
+}
+
+/** Lee la respuesta como JSON sin explotar si el servidor devolvió otra cosa
+ * (por ejemplo una página de error de la plataforma de hosting con el body
+ * vacío) — siempre da un mensaje entendible en vez de un error críptico. */
+async function leerRespuesta(res: Response): Promise<{ ok: boolean; data: Record<string, unknown> }> {
+  const texto = await res.text();
+  try {
+    return { ok: res.ok, data: texto ? JSON.parse(texto) : {} };
+  } catch {
+    return { ok: false, data: { error: `El servidor respondió con un error inesperado (código ${res.status}).` } };
+  }
+}
+
+/** Sube un archivo directo a Cloudinary desde el navegador (unsigned upload),
+ * sin pasar por nuestro backend: así evitamos el límite de tamaño de
+ * request de las funciones serverless de Vercel (~4.5MB), que una foto de
+ * celular normal supera fácilmente. */
+async function subirACloudinaryDirecto(file: File, cloudName: string, uploadPreset: string): Promise<string> {
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("upload_preset", uploadPreset);
+  formData.append("folder", "dm-inmobiliaria/propiedades");
+
+  const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/auto/upload`, {
+    method: "POST",
+    body: formData,
+  });
+  const { ok, data } = await leerRespuesta(res);
+  if (!ok) {
+    const mensaje = (data.error as { message?: string } | undefined)?.message;
+    throw new Error(mensaje ?? "No se pudo subir la imagen a Cloudinary.");
+  }
+  return data.secure_url as string;
+}
+
+export function ImageManager({ propiedadId, imagenesIniciales, configSubida }: ImageManagerProps) {
   const [imagenes, setImagenes] = useState<ImagenItem[]>(imagenesIniciales);
   const [subiendo, setSubiendo] = useState(false);
 
@@ -32,13 +73,36 @@ export function ImageManager({ propiedadId, imagenesIniciales }: { propiedadId: 
     async (files: File[]) => {
       if (files.length === 0) return;
       setSubiendo(true);
-      const formData = new FormData();
-      files.forEach((f) => formData.append("files", f));
 
       try {
-        const res = await fetch(`/api/admin/properties/${propiedadId}/images`, { method: "POST", body: formData });
-        const body = await res.json();
-        if (!res.ok) throw new Error(body.error ?? "No se pudieron subir las imágenes.");
+        let body: { imagenes: ImagenItem[] };
+
+        if (configSubida.provider === "cloudinary") {
+          if (!configSubida.cloudName || !configSubida.uploadPreset) {
+            throw new Error(
+              "Falta configurar CLOUDINARY_UPLOAD_PRESET en las variables de entorno. Mirá el README (sección Deploy) para crear un preset sin firmar en Cloudinary."
+            );
+          }
+          const urls = await Promise.all(
+            files.map((f) => subirACloudinaryDirecto(f, configSubida.cloudName as string, configSubida.uploadPreset as string))
+          );
+          const res = await fetch(`/api/admin/properties/${propiedadId}/images`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ urls }),
+          });
+          const leido = await leerRespuesta(res);
+          if (!leido.ok) throw new Error((leido.data.error as string) ?? "No se pudieron guardar las imágenes.");
+          body = leido.data as unknown as { imagenes: ImagenItem[] };
+        } else {
+          const formData = new FormData();
+          files.forEach((f) => formData.append("files", f));
+          const res = await fetch(`/api/admin/properties/${propiedadId}/images`, { method: "POST", body: formData });
+          const leido = await leerRespuesta(res);
+          if (!leido.ok) throw new Error((leido.data.error as string) ?? "No se pudieron subir las imágenes.");
+          body = leido.data as unknown as { imagenes: ImagenItem[] };
+        }
+
         setImagenes((prev) => [...prev, ...body.imagenes]);
         toast.success(`${files.length > 1 ? "Imágenes subidas" : "Imagen subida"} correctamente.`);
       } catch (err) {
@@ -47,7 +111,7 @@ export function ImageManager({ propiedadId, imagenesIniciales }: { propiedadId: 
         setSubiendo(false);
       }
     },
-    [propiedadId]
+    [propiedadId, configSubida]
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({

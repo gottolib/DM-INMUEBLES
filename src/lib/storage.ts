@@ -92,3 +92,39 @@ async function eliminarDeCloudinary(url: string): Promise<void> {
   if (!match) return;
   await cloudinary.uploader.destroy(match[1]).catch(() => undefined);
 }
+
+export interface ConfigSubidaCliente {
+  provider: "local" | "cloudinary";
+  cloudName: string | null;
+  uploadPreset: string | null;
+}
+
+/**
+ * Datos (no secretos) que el navegador necesita para subir imágenes.
+ *
+ * En Vercel, las funciones serverless tienen un límite de tamaño de
+ * request (~4.5MB) que una foto de celular normal supera fácilmente —
+ * subir el archivo pasando por nuestro backend falla ahí con un error
+ * críptico ("Unexpected end of JSON input", porque la respuesta ni
+ * siquiera llega a ser JSON). La solución estándar es que el navegador
+ * suba el archivo DIRECTO a Cloudinary (usando un "unsigned upload
+ * preset", que no requiere exponer ninguna clave secreta) y que nuestro
+ * servidor solo reciba la URL final para guardarla en la base de datos.
+ * Con STORAGE_PROVIDER=local (desarrollo) esto no aplica: el archivo
+ * sigue subiendo normalmente a nuestro propio backend.
+ */
+export function getConfigSubidaCliente(): ConfigSubidaCliente {
+  const provider = process.env.STORAGE_PROVIDER === "cloudinary" ? "cloudinary" : "local";
+
+  if (provider !== "cloudinary") {
+    return { provider: "local", cloudName: null, uploadPreset: null };
+  }
+
+  // CLOUDINARY_URL tiene el formato cloudinary://<api_key>:<api_secret>@<cloud_name>
+  // Acá solo extraemos el cloud_name (dato público) — el secreto nunca sale del servidor.
+  const match = process.env.CLOUDINARY_URL?.match(/@([^/]+)$/);
+  const cloudName = match?.[1] ?? null;
+  const uploadPreset = process.env.CLOUDINARY_UPLOAD_PRESET ?? null;
+
+  return { provider: "cloudinary", cloudName, uploadPreset };
+}

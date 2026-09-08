@@ -190,6 +190,7 @@ Creá un repositorio nuevo en GitHub y subí el código (GitHub te muestra los c
    cloudinary://123456789012345:AbCdEfGhIjKlMnOpQrStUvWxYz@tu-cloud-name
    ```
    Copiala tal cual (la vas a necesitar en el paso siguiente).
+3. **Creá un "upload preset" sin firmar** (necesario para que las fotos se suban directo desde tu navegador a Cloudinary, sin pasar por Vercel — si te lo salteás, vas a ver el error `Unexpected end of JSON input` al subir fotos de tamaño real): en el Dashboard andá al ícono de engranaje (⚙️, Settings) → pestaña **Upload** → sección "Upload presets" → **Add upload preset**. En "Signing Mode" elegí **Unsigned**, guardá, y copiá el nombre del preset (Cloudinary te genera uno automático tipo `ml_default` si no le ponés uno propio).
 
 ### 8.4. Importar el proyecto en Vercel
 
@@ -207,6 +208,7 @@ Creá un repositorio nuevo en GitHub y subí el código (GitHub te muestra los c
    | `NEXT_PUBLIC_SITE_URL` | La misma URL de Vercel |
    | `STORAGE_PROVIDER` | `cloudinary` |
    | `CLOUDINARY_URL` | El valor que copiaste en el paso 8.3 |
+   | `CLOUDINARY_UPLOAD_PRESET` | El nombre del preset sin firmar que creaste en el paso 8.3 |
 
 4. Hacé clic en **Deploy**. Vercel instala dependencias, corre `prisma generate` y `prisma db push` (crean/actualizan las tablas en Neon automáticamente) y compila el sitio — no hace falta ningún paso manual de migraciones.
 
@@ -240,4 +242,5 @@ Con cualquiera de las dos, ya tenés el sitio funcionando en tu URL de Vercel, c
 - **"Invalid `prisma...` invocation" o errores de Prisma Client desactualizado**: corré `npx prisma generate` y reiniciá `npm run dev`.
 - **No puedo entrar a `/admin`**: verificá que `ADMIN_EMAIL` / `ADMIN_PASSWORD` en tu `.env` sean los mismos que usaste la última vez que corriste `npm run db:seed` (el seed es lo que crea/actualiza ese usuario).
 - **Las imágenes que subo no se ven en producción (Vercel)**: revisá que `STORAGE_PROVIDER=cloudinary` y `CLOUDINARY_URL` estén cargadas en las variables de entorno de Vercel (sección 8.4). Con `STORAGE_PROVIDER=local` las imágenes solo persisten en tu computadora, no en Vercel.
+- **Al subir una foto veo el error "Unexpected end of JSON input"**: falta configurar `CLOUDINARY_UPLOAD_PRESET` (sección 8.3 y 8.4). Sin eso, el navegador intenta mandar el archivo a través de Vercel, que rechaza requests de más de ~4.5MB con una respuesta vacía (de ahí el error). Con el preset configurado, la foto se sube directo a Cloudinary desde el navegador y este problema desaparece.
 - **Cambié `prisma/schema.prisma` y no se refleja**: corré `npm run db:push` para sincronizar la base de datos (en Vercel esto ya pasa solo en cada deploy).

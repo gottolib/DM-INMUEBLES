@@ -3,6 +3,7 @@
 import { useActionState } from "react";
 import type { FormActionState } from "@/app/admin/propiedades/actions";
 import { ImageManager } from "@/components/admin/ImageManager";
+import type { ConfigSubidaCliente } from "@/lib/storage";
 import type { PropiedadCompleta } from "@/types/propiedad";
 
 interface TipoOption {
@@ -14,11 +15,13 @@ interface PropertyFormProps {
   tipos: TipoOption[];
   propiedad?: PropiedadCompleta;
   action: (prevState: FormActionState, formData: FormData) => Promise<FormActionState>;
+  /** Solo se usa (y hace falta) cuando ya existe `propiedad`, para mostrar el gestor de imágenes. */
+  configSubida?: ConfigSubidaCliente;
 }
 
 const initialState: FormActionState = {};
 
-export function PropertyForm({ tipos, propiedad, action }: PropertyFormProps) {
+export function PropertyForm({ tipos, propiedad, action, configSubida }: PropertyFormProps) {
   const [state, formAction, pending] = useActionState(action, initialState);
   const err = (campo: string) => state.fieldErrors?.[campo];
 
@@ -149,7 +152,11 @@ export function PropertyForm({ tipos, propiedad, action }: PropertyFormProps) {
       {propiedad && (
         <Section titulo="Imágenes">
           <div className="sm:col-span-2">
-            <ImageManager propiedadId={propiedad.id} imagenesIniciales={propiedad.imagenes} />
+            <ImageManager
+              propiedadId={propiedad.id}
+              imagenesIniciales={propiedad.imagenes}
+              configSubida={configSubida ?? { provider: "local", cloudName: null, uploadPreset: null }}
+            />
           </div>
         </Section>
       )}
