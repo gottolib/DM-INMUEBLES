@@ -39,7 +39,7 @@ function LoginForm() {
     <div className="min-h-screen flex items-center justify-center bg-charcoal px-5">
       <div className="w-full max-w-sm bg-white rounded-2xl shadow-2xl p-8">
         <div className="flex flex-col items-center mb-6">
-          <Image src="/logo-dm-inmobiliaria.svg" alt="DM Inmobiliaria" width={64} height={64} className="rounded-full mb-3" />
+          <Image src="/logo-dm-inmobiliaria.png" alt="DM Inmobiliaria" width={96} height={87} className="mb-3" />
           <h1 className="font-display text-xl text-charcoal">Panel de administración</h1>
           <p className="text-xs text-text/50">DM Inmobiliaria</p>
         </div>

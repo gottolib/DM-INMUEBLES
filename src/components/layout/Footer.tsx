@@ -18,9 +18,8 @@ export function Footer({ telefono, whatsapp, email, direccion, facebookUrl, inst
     <footer className="bg-charcoal text-cream/85 mt-20">
       <div className="container-site py-14 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
         <div>
-          <div className="flex items-center gap-3 mb-4">
-            <Image src="/logo-dm-inmobiliaria.svg" alt="DM Inmobiliaria" width={48} height={48} className="rounded-full" />
-            <span className="font-display text-lg text-white">DM Inmobiliaria</span>
+          <div className="mb-4">
+            <Image src="/logo-dm-inmobiliaria.png" alt="DM Inmobiliaria" width={140} height={126} />
           </div>
           <p className="text-sm leading-relaxed text-cream/70">
             Compraventa y alquiler de propiedades en Goya y la región, con atención cercana y personalizada.

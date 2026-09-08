@@ -16,14 +16,10 @@ export function AboutSection({ texto }: { texto: string }) {
             Conocer más
           </Link>
         </div>
-        <div className="relative aspect-[4/3] rounded-xl overflow-hidden">
-          <Image
-            src="https://picsum.photos/id/1040/900/700"
-            alt="Oficina de DM Inmobiliaria"
-            fill
-            sizes="(max-width: 1024px) 100vw, 50vw"
-            className="object-cover"
-          />
+        <div className="relative aspect-[4/3] rounded-xl overflow-hidden bg-charcoal-soft flex items-center justify-center p-10">
+          <div className="relative w-full h-full">
+            <Image src="/logo-dm-inmobiliaria.png" alt="DM Inmobiliaria" fill sizes="(max-width: 1024px) 100vw, 50vw" className="object-contain" />
+          </div>
         </div>
       </div>
     </section>

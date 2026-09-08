@@ -5,7 +5,7 @@ export default function NotFound() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-charcoal text-cream px-6">
       <div className="text-center max-w-md">
-        <Image src="/logo-dm-inmobiliaria.svg" alt="DM Inmobiliaria" width={80} height={80} className="mx-auto mb-6 rounded-full" />
+        <Image src="/logo-dm-inmobiliaria.png" alt="DM Inmobiliaria" width={110} height={99} className="mx-auto mb-6" />
         <p className="font-display text-6xl text-gold mb-4">404</p>
         <h1 className="font-display text-2xl text-white mb-3">No encontramos esta página</h1>
         <p className="text-cream/70 mb-8">

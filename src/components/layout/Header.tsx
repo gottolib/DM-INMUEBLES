@@ -12,16 +12,13 @@ export interface TipoNav {
 }
 
 interface HeaderProps {
-  telefono: string;
-  whatsapp: string;
-  direccion: string;
   tiposVenta: TipoNav[];
   tiposAlquiler: TipoNav[];
 }
 
-const NAV_LINK = "text-sm font-medium tracking-wide uppercase transition-colors hover:text-gold";
+const NAV_LINK = "text-sm font-medium tracking-wide uppercase transition-colors hover:text-charcoal";
 
-export function Header({ telefono, whatsapp, direccion, tiposVenta, tiposAlquiler }: HeaderProps) {
+export function Header({ tiposVenta, tiposAlquiler }: HeaderProps) {
   const pathname = usePathname();
   const [menuAbierto, setMenuAbierto] = useState(false);
   const [dropdown, setDropdown] = useState<"venta" | "alquiler" | null>(null);
@@ -38,33 +35,13 @@ export function Header({ telefono, whatsapp, direccion, tiposVenta, tiposAlquile
 
   return (
     <header className="sticky top-0 z-50 shadow-sm">
-      {/* Barra superior de contacto */}
-      <div className="hidden md:block bg-charcoal text-cream/90 text-xs">
-        <div className="container-site flex items-center justify-between py-2">
-          <span className="truncate">{direccion}</span>
-          <div className="flex items-center gap-5">
-            {telefono && <span>{telefono}</span>}
-            {whatsapp && (
-              <a
-                href={`https://wa.me/${whatsapp}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-gold-light hover:text-gold transition-colors"
-              >
-                WhatsApp
-              </a>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* Barra principal */}
-      <div className="bg-white/95 backdrop-blur border-b border-gold-light/40">
+      {/* Barra principal, en dorado oscuro */}
+      <div className="bg-gold-dark border-b border-black/10">
         <div className="container-site flex items-center justify-between py-3">
-          <Logo size={52} textClassName="text-charcoal" />
+          <Logo width={64} />
 
           {/* Nav desktop */}
-          <nav className="hidden lg:flex items-center gap-8 text-charcoal">
+          <nav className="hidden lg:flex items-center gap-8 text-white">
             <Link href="/" className={NAV_LINK}>
               Inicio
             </Link>
@@ -102,7 +79,7 @@ export function Header({ telefono, whatsapp, direccion, tiposVenta, tiposAlquile
             type="button"
             aria-label={menuAbierto ? "Cerrar menú" : "Abrir menú"}
             aria-expanded={menuAbierto}
-            className="lg:hidden p-2 text-charcoal"
+            className="lg:hidden p-2 text-white"
             onClick={() => setMenuAbierto((v) => !v)}
           >
             <span className="sr-only">Menú</span>

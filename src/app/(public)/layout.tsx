@@ -24,13 +24,7 @@ export default async function PublicLayout({ children }: { children: React.React
       {/* Next.js hoistea automáticamente este <link> al <head> del documento. */}
       <link rel="stylesheet" href={urlFuentes} />
       <style>{construirEstiloRoles(config)}</style>
-      <Header
-        telefono={config.telefono}
-        whatsapp={config.whatsapp}
-        direccion={config.direccion}
-        tiposVenta={tiposVenta}
-        tiposAlquiler={tiposAlquiler}
-      />
+      <Header tiposVenta={tiposVenta} tiposAlquiler={tiposAlquiler} />
       <main className="flex-1">{children}</main>
       <Footer
         telefono={config.telefono}

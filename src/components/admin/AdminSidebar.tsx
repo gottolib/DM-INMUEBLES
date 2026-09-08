@@ -19,7 +19,7 @@ export function AdminSidebar({ nombre, mensajesSinLeer }: { nombre: string; mens
   return (
     <aside className="lg:w-64 shrink-0 bg-charcoal text-cream lg:min-h-screen">
       <div className="p-5 flex items-center gap-3 border-b border-white/10">
-        <Image src="/logo-dm-inmobiliaria.svg" alt="DM Inmobiliaria" width={38} height={38} className="rounded-full" />
+        <Image src="/logo-dm-inmobiliaria.png" alt="DM Inmobiliaria" width={42} height={38} />
         <div>
           <p className="font-display text-sm text-white leading-tight">DM Inmobiliaria</p>
           <p className="text-xs text-cream/50">Panel admin</p>

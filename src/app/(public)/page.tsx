@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Hero } from "@/components/home/Hero";
+import { BrandBanner } from "@/components/home/BrandBanner";
 import { QuickSearch } from "@/components/properties/QuickSearch";
 import { FeaturedGrid } from "@/components/home/FeaturedGrid";
 import { AboutSection } from "@/components/home/AboutSection";
@@ -33,7 +33,7 @@ export default async function HomePage() {
   return (
     <>
       <div className="relative">
-        <Hero propiedades={destacadas.slice(0, 5)} />
+        <BrandBanner />
         <div className="container-site relative z-10 -mt-8 sm:-mt-10">
           <QuickSearch tipos={tipos} />
         </div>

@@ -1,13 +1,20 @@
 import { ImageResponse } from "next/og";
+import { readFile } from "fs/promises";
+import path from "path";
 
 export const size = { width: 64, height: 64 };
 export const contentType = "image/png";
 
-// Favicon generado dinámicamente con la identidad de marca (círculo dorado
-// con ícono de casa y "DM"), para no depender de un archivo binario.
-// Si más adelante tenés el logo oficial en PNG, podés reemplazar este
-// archivo por un favicon.ico estático en /src/app y borrar este icon.tsx.
-export default function Icon() {
+// Favicon generado a partir del logo real (/public/logo-dm-inmobiliaria.png),
+// recortado sobre la parte superior (el ícono de casa + "DM") para que se
+// vea nítido en el tamaño chico de una pestaña del navegador — el nombre
+// completo de la empresa, que va debajo en el archivo original, no entraría
+// legible en 64x64px.
+export default async function Icon() {
+  const rutaLogo = path.join(process.cwd(), "public", "logo-dm-inmobiliaria.png");
+  const buffer = await readFile(rutaLogo);
+  const logoDataUrl = `data:image/png;base64,${buffer.toString("base64")}`;
+
   return new ImageResponse(
     (
       <div
@@ -15,41 +22,18 @@ export default function Icon() {
           width: "100%",
           height: "100%",
           borderRadius: "50%",
-          background: "radial-gradient(circle at 35% 30%, #3a3a42, #1e1e24)",
+          background: "#f3ecd9",
           display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
+          overflow: "hidden",
         }}
       >
-        <div
-          style={{
-            width: "88%",
-            height: "88%",
-            borderRadius: "50%",
-            background: "linear-gradient(135deg, #e8d9a6, #c9a24b, #9c7a2e)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <div
-            style={{
-              width: "86%",
-              height: "86%",
-              borderRadius: "50%",
-              background: "#f3ecd9",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontFamily: "Georgia, serif",
-              fontWeight: 700,
-              fontSize: 26,
-              color: "#9c7a2e",
-            }}
-          >
-            DM
-          </div>
-        </div>
+        <img
+          src={logoDataUrl}
+          alt=""
+          width={size.width}
+          height={size.height}
+          style={{ objectFit: "cover", objectPosition: "center 15%" }}
+        />
       </div>
     ),
     { ...size }

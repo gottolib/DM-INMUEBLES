@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import { getSiteConfig } from "@/lib/site-config";
 
 export const metadata: Metadata = {
@@ -11,12 +10,6 @@ const VALORES = [
   { titulo: "Transparencia", texto: "Información clara y honesta en cada operación, sin letra chica." },
   { titulo: "Cercanía", texto: "Atención personalizada, acompañando a cada cliente en todo el proceso." },
   { titulo: "Conocimiento local", texto: "Años de trayectoria conociendo el mercado inmobiliario de la región." },
-];
-
-const EQUIPO = [
-  { nombre: "María Domínguez", rol: "Directora Comercial" },
-  { nombre: "Lucas Medina", rol: "Asesor de Ventas" },
-  { nombre: "Sofía Ramírez", rol: "Atención al Cliente" },
 ];
 
 export default async function QuienesSomosPage() {
@@ -34,26 +27,24 @@ export default async function QuienesSomosPage() {
 
       <section className="container-site py-16 grid grid-cols-1 sm:grid-cols-3 gap-8">
         {VALORES.map((v) => (
-          <div key={v.titulo} className="text-center border border-gold-light/50 rounded-xl p-8 bg-cream">
-            <h3 className="texto-titulo text-xl mb-2">{v.titulo}</h3>
-            <p className="text-sm text-text/65 leading-relaxed">{v.texto}</p>
+          <div key={v.titulo} className="flip-card" tabIndex={0}>
+            <div className="flip-card-inner shadow-sm">
+              <div
+                className="flip-card-front"
+                style={{ background: "linear-gradient(135deg, #e8d9a6, #c9a24b 45%, #9c7a2e)" }}
+              >
+                <h3 className="texto-titulo text-xl text-charcoal font-semibold">{v.titulo}</h3>
+                <p className="text-xs text-charcoal/60 mt-3 uppercase tracking-wide">Pasá el mouse</p>
+              </div>
+              <div
+                className="flip-card-back"
+                style={{ background: "linear-gradient(135deg, #9c7a2e, #c9a24b 55%, #e8d9a6)" }}
+              >
+                <p className="text-sm text-charcoal font-medium leading-relaxed">{v.texto}</p>
+              </div>
+            </div>
           </div>
         ))}
-      </section>
-
-      <section className="container-site pb-20">
-        <h2 className="texto-titulo text-2xl text-center mb-10">Nuestro equipo</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-4xl mx-auto">
-          {EQUIPO.map((persona) => (
-            <div key={persona.nombre} className="text-center">
-              <div className="relative w-28 h-28 mx-auto rounded-full overflow-hidden border-2 border-gold mb-3">
-                <Image src={`https://picsum.photos/seed/${encodeURIComponent(persona.nombre)}/200/200`} alt={persona.nombre} fill className="object-cover" />
-              </div>
-              <p className="font-display text-charcoal">{persona.nombre}</p>
-              <p className="text-xs text-gold-dark uppercase tracking-wide">{persona.rol}</p>
-            </div>
-          ))}
-        </div>
       </section>
     </div>
   );

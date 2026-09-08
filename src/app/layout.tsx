@@ -26,7 +26,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "DM Inmobiliaria",
     description: "Venta y alquiler de propiedades en Goya, Corrientes.",
-    images: ["/logo-dm-inmobiliaria.svg"],
+    images: ["/logo-dm-inmobiliaria.png"],
     locale: "es_AR",
     type: "website",
   },
