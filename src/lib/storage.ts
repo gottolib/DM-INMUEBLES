@@ -1,7 +1,19 @@
 import { writeFile, unlink, mkdir } from "fs/promises";
 import path from "path";
 import crypto from "crypto";
-import { v2 as cloudinary } from "cloudinary";
+// El SDK de Cloudinary se auto-configura a partir de CLOUDINARY_URL apenas
+// se importa el módulo, y si esa variable está mal formada tira una
+// excepción en ese mismo momento. Next.js evalúa los route handlers durante
+// el build (para recolectar metadata), así que un import estático acá
+// hacía que un CLOUDINARY_URL mal cargado rompiera el build ENTERO, incluso
+// en rutas que no tienen nada que ver con imágenes. Por eso se importa de
+// forma diferida (dynamic import), solo en el momento en que efectivamente
+// se necesita subir/borrar una imagen — así un typo en esa variable rompe,
+// como mucho, esa operación puntual en tiempo de ejecución, nunca el build.
+async function getCloudinary() {
+  const { v2 } = await import("cloudinary");
+  return v2;
+}
 
 // Abstracción de almacenamiento de imágenes, controlada por STORAGE_PROVIDER:
 //
@@ -68,10 +80,11 @@ export async function eliminarImagen(url: string): Promise<void> {
   await unlink(rutaAbsoluta).catch(() => undefined);
 }
 
-function subirACloudinary(buffer: Buffer): Promise<string> {
+async function subirACloudinary(buffer: Buffer): Promise<string> {
   if (!process.env.CLOUDINARY_URL) {
     throw new Error("Falta la variable de entorno CLOUDINARY_URL para poder subir imágenes a Cloudinary.");
   }
+  const cloudinary = await getCloudinary();
 
   return new Promise((resolve, reject) => {
     const stream = cloudinary.uploader.upload_stream(
@@ -90,6 +103,7 @@ async function eliminarDeCloudinary(url: string): Promise<void> {
   // "/upload/v123456789/" sin la extensión final.
   const match = url.match(/\/upload\/(?:v\d+\/)?(.+)\.[a-zA-Z0-9]+$/);
   if (!match) return;
+  const cloudinary = await getCloudinary();
   await cloudinary.uploader.destroy(match[1]).catch(() => undefined);
 }
 
