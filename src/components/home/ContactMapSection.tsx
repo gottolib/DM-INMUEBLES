@@ -7,8 +7,8 @@ export function ContactMapSection({ direccion }: { direccion: string }) {
   return (
     <section className="container-site py-16 sm:py-20 grid grid-cols-1 lg:grid-cols-2 gap-10">
       <div>
-        <p className="text-xs uppercase tracking-[0.2em] text-gold-dark font-semibold mb-2">Visitanos</p>
-        <h2 className="font-display text-3xl text-charcoal mb-5">Estamos para ayudarte</h2>
+        <p className="texto-subtitulo text-xs uppercase tracking-[0.2em] font-semibold mb-2">Visitanos</p>
+        <h2 className="texto-titulo text-3xl mb-5">Estamos para ayudarte</h2>
         <div className="rounded-xl overflow-hidden border border-gold-light/50 aspect-[4/3]">
           <iframe
             src={mapaSrc}

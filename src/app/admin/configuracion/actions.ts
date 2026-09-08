@@ -19,6 +19,14 @@ export async function guardarConfiguracionAction(_prevState: FormActionState, fo
     instagramUrl: String(formData.get("instagramUrl") ?? ""),
     horarios: String(formData.get("horarios") ?? ""),
     textoQuienesSomos: String(formData.get("textoQuienesSomos") ?? ""),
+    tituloFuente: String(formData.get("tituloFuente") ?? ""),
+    tituloColor: String(formData.get("tituloColor") ?? ""),
+    subtituloFuente: String(formData.get("subtituloFuente") ?? ""),
+    subtituloColor: String(formData.get("subtituloColor") ?? ""),
+    caracteristicaFuente: String(formData.get("caracteristicaFuente") ?? ""),
+    caracteristicaColor: String(formData.get("caracteristicaColor") ?? ""),
+    precioFuente: String(formData.get("precioFuente") ?? ""),
+    precioColor: String(formData.get("precioColor") ?? ""),
   };
 
   const parsed = configuracionSchema.safeParse(datos);

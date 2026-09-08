@@ -37,7 +37,7 @@ export async function PropertyListingPage({ titulo, descripcion, basePath, opera
   return (
     <div className="container-site py-12">
       <div className="max-w-2xl mb-10">
-        <h1 className="font-display text-3xl sm:text-4xl text-charcoal mb-3">{titulo}</h1>
+        <h1 className="texto-titulo text-3xl sm:text-4xl mb-3">{titulo}</h1>
         <p className="text-text/60">{descripcion}</p>
       </div>
 

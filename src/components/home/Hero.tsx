@@ -62,14 +62,14 @@ export function Hero({ propiedades }: { propiedades: PropiedadConPortada[] }) {
                 <OperacionBadge operacion={propiedad.tipoOperacion} />
                 <EstadoBadge estado={propiedad.estadoDestacado} />
               </div>
-              <h2 className="font-display text-3xl sm:text-5xl font-semibold max-w-2xl leading-tight mb-3">{propiedad.titulo}</h2>
-              <p className="text-white/80 mb-5">
+              <h2 className="fuente-titulo text-3xl sm:text-5xl font-semibold max-w-2xl leading-tight mb-3">{propiedad.titulo}</h2>
+              <p className="fuente-caracteristica text-white/80 mb-5">
                 {propiedad.zona ? `${propiedad.zona}, ` : ""}
                 {propiedad.localidad}
                 {formatSuperficie(propiedad.superficieTotal) ? ` · ${formatSuperficie(propiedad.superficieTotal)}` : ""}
               </p>
               <div className="flex items-center gap-6 flex-wrap">
-                <span className="font-display text-2xl text-gold-light font-semibold">
+                <span className="fuente-precio text-2xl text-gold-light font-semibold">
                   {formatPrecio(propiedad.precio, propiedad.moneda, propiedad.consultarPrecio)}
                 </span>
                 <Link

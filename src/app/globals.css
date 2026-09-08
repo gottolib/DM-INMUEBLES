@@ -13,6 +13,19 @@
 
   --background: var(--color-white);
   --foreground: var(--color-text);
+
+  /* Valores por defecto de los 4 roles tipográficos (título, subtítulo,
+     característica, precio), editables desde /admin/configuracion. El
+     layout público sobreescribe estas variables en tiempo de request con
+     los valores reales guardados en la base — esto es solo el respaldo. */
+  --font-titulo: "Playfair Display", Georgia, serif;
+  --color-titulo: var(--color-charcoal);
+  --font-subtitulo: "Inter", system-ui, sans-serif;
+  --color-subtitulo: var(--color-gold-dark);
+  --font-caracteristica: "Inter", system-ui, sans-serif;
+  --color-caracteristica: var(--color-text);
+  --font-precio: "Playfair Display", Georgia, serif;
+  --color-precio: var(--color-gold-dark);
 }
 
 @theme inline {
@@ -81,6 +94,40 @@ h4,
 .input-brand:focus,
 .select-brand:focus {
   border-color: var(--color-gold);
+}
+
+/* Roles tipográficos configurables desde /admin/configuracion. */
+.texto-titulo {
+  font-family: var(--font-titulo);
+  color: var(--color-titulo);
+}
+.texto-subtitulo {
+  font-family: var(--font-subtitulo);
+  color: var(--color-subtitulo);
+}
+.texto-caracteristica {
+  font-family: var(--font-caracteristica);
+  color: var(--color-caracteristica);
+}
+.texto-precio {
+  font-family: var(--font-precio);
+  color: var(--color-precio);
+}
+
+/* Variantes "solo fuente" (sin forzar color), para usar sobre fondos
+   oscuros/fotos donde el color tiene que mantenerse claro por contraste
+   sin importar el color elegido para ese rol en /admin/configuracion. */
+.fuente-titulo {
+  font-family: var(--font-titulo);
+}
+.fuente-subtitulo {
+  font-family: var(--font-subtitulo);
+}
+.fuente-caracteristica {
+  font-family: var(--font-caracteristica);
+}
+.fuente-precio {
+  font-family: var(--font-precio);
 }
 
 /* Line-clamp utilitario sin depender del plugin de tipografía */

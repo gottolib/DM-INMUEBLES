@@ -135,5 +135,17 @@ model ConfiguracionSitio {
   horarios           String @default("")
   textoQuienesSomos  String @default("")
 
+  // Tipografía y colores por rol de texto, editables desde /admin/configuracion.
+  // El valor de "Fuente" es una clave del catálogo curado (ver src/lib/fonts-catalogo.ts),
+  // no un nombre de fuente libre, para poder cargarla de forma controlada.
+  tituloFuente          String @default("playfair")
+  tituloColor           String @default("#1e1e24")
+  subtituloFuente       String @default("inter")
+  subtituloColor        String @default("#9c7a2e")
+  caracteristicaFuente  String @default("inter")
+  caracteristicaColor   String @default("#2a2a2a")
+  precioFuente          String @default("playfair")
+  precioColor           String @default("#9c7a2e")
+
   updatedAt DateTime @updatedAt
 }

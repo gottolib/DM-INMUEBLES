@@ -35,20 +35,20 @@ export function PropertyCard({ propiedad }: { propiedad: PropiedadConPortada }) 
       </div>
 
       <div className="p-4">
-        <p className="text-xs uppercase tracking-wide text-gold-dark font-medium mb-1">
+        <p className="texto-subtitulo text-xs uppercase tracking-wide font-medium mb-1">
           {propiedad.tipoPropiedad.nombre} · {tipoOperacionSlug(propiedad.tipoOperacion) === "alquiler-temporario" ? "Temp." : ""}
         </p>
-        <h3 className="font-display text-lg text-charcoal leading-snug line-clamp-2 mb-1">{propiedad.titulo}</h3>
-        <p className="text-sm text-text/60 mb-3">
+        <h3 className="texto-titulo text-lg leading-snug line-clamp-2 mb-1">{propiedad.titulo}</h3>
+        <p className="texto-caracteristica text-sm opacity-70 mb-3">
           {propiedad.zona ? `${propiedad.zona}, ` : ""}
           {propiedad.localidad}
         </p>
 
         <div className="flex items-center justify-between">
-          <span className="font-display text-base text-gold-dark font-semibold">
+          <span className="texto-precio text-base font-semibold">
             {formatPrecio(propiedad.precio, propiedad.moneda, propiedad.consultarPrecio)}
           </span>
-          {superficie && <span className="text-xs text-text/50">{superficie}</span>}
+          {superficie && <span className="texto-caracteristica text-xs opacity-60">{superficie}</span>}
         </div>
 
         <span className="mt-4 inline-block w-full text-center text-sm font-medium uppercase tracking-wide border border-gold text-gold-dark rounded-full py-2 group-hover:bg-gold group-hover:text-charcoal transition-colors">

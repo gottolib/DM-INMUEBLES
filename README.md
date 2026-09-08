@@ -110,7 +110,7 @@ Abrí [http://localhost:3000](http://localhost:3000) para el sitio público, y [
 4. Una vez creada la propiedad, más abajo en la misma pantalla vas a poder **subir las fotos**: arrastralas al recuadro punteado o hacé clic para elegirlas desde tu computadora (JPG, PNG o WEBP, hasta 8MB cada una). Podés arrastrar las miniaturas para reordenarlas, marcar cuál es la portada, o eliminarlas.
 5. Desde el listado de **Propiedades** podés buscar, cambiar el estado (Activa/Inactiva/Vendida/Alquilada/Borrador), marcarla como destacada de portada, o eliminarla.
 6. **Mensajes**: ahí llegan las consultas del formulario de contacto del sitio (con o sin propiedad asociada).
-7. **Configuración**: teléfono, WhatsApp, email, dirección, redes sociales, horarios y el texto de "Quiénes somos" — se reflejan en todo el sitio al instante, sin tocar código.
+7. **Configuración**: teléfono, WhatsApp, email, dirección, redes sociales, horarios y el texto de "Quiénes somos" — se reflejan en todo el sitio al instante, sin tocar código. También desde ahí se elige, para cada tipo de texto del sitio (Títulos, Subtítulos, Características, Precios), una tipografía de una lista de opciones y un color — con vista previa en vivo antes de guardar. La paleta general de marca (botones, fondos, bordes dorados) sigue viviendo en el código (`src/app/globals.css`), ya que es parte de la identidad visual base del sitio, no contenido editable del día a día.
 
 Los tipos de propiedad del menú (Venta ▾ / Alquiler ▾) y las categorías se arman **automáticamente** según las propiedades que vayas cargando: no hay que editar código para agregar/quitar categorías del menú.
 

@@ -11,6 +11,14 @@ const DEFAULTS = {
   instagramUrl: "",
   horarios: "",
   textoQuienesSomos: "",
+  tituloFuente: "playfair",
+  tituloColor: "#1e1e24",
+  subtituloFuente: "inter",
+  subtituloColor: "#9c7a2e",
+  caracteristicaFuente: "inter",
+  caracteristicaColor: "#2a2a2a",
+  precioFuente: "playfair",
+  precioColor: "#9c7a2e",
 };
 
 export async function getSiteConfig() {

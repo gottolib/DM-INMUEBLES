@@ -6,8 +6,8 @@ export function AboutSection({ texto }: { texto: string }) {
     <section className="bg-charcoal text-cream">
       <div className="container-site py-16 sm:py-20 grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
         <div>
-          <p className="text-xs uppercase tracking-[0.2em] text-gold-light font-semibold mb-2">Sobre nosotros</p>
-          <h2 className="font-display text-3xl sm:text-4xl text-white mb-5">Confianza y cercanía en cada operación</h2>
+          <p className="fuente-subtitulo text-xs uppercase tracking-[0.2em] text-gold-light font-semibold mb-2">Sobre nosotros</p>
+          <h2 className="fuente-titulo text-3xl sm:text-4xl text-white mb-5">Confianza y cercanía en cada operación</h2>
           <p className="text-cream/75 leading-relaxed mb-8 line-clamp-3 sm:line-clamp-none">{texto}</p>
           <Link
             href="/quienes-somos"

@@ -15,7 +15,7 @@ export function PropertyGrid({ items, total, totalPaginas, pagina, basePath, sea
   if (items.length === 0) {
     return (
       <div className="text-center py-20 border border-dashed border-gold-light/60 rounded-xl">
-        <p className="font-display text-xl text-charcoal mb-2">No encontramos propiedades con esos filtros</p>
+        <p className="texto-titulo text-xl mb-2">No encontramos propiedades con esos filtros</p>
         <p className="text-sm text-text/60">Probá ampliar el rango de precios o cambiar la zona de búsqueda.</p>
       </div>
     );

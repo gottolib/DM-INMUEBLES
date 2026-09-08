@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { CLAVES_FUENTES } from "@/lib/fonts-catalogo";
 
 // Esquemas de validación compartidos entre formularios (cliente) y
 // API routes (servidor), para que las reglas nunca queden desincronizadas.
@@ -72,6 +73,14 @@ export const configuracionSchema = z.object({
   instagramUrl: z.string().trim().optional().or(z.literal("")),
   horarios: z.string().trim().optional().or(z.literal("")),
   textoQuienesSomos: z.string().trim().optional().or(z.literal("")),
+  tituloFuente: z.enum(CLAVES_FUENTES),
+  tituloColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/, "Ingresá un color válido."),
+  subtituloFuente: z.enum(CLAVES_FUENTES),
+  subtituloColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/, "Ingresá un color válido."),
+  caracteristicaFuente: z.enum(CLAVES_FUENTES),
+  caracteristicaColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/, "Ingresá un color válido."),
+  precioFuente: z.enum(CLAVES_FUENTES),
+  precioColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/, "Ingresá un color válido."),
 });
 
 export type ConfiguracionInput = z.infer<typeof configuracionSchema>;

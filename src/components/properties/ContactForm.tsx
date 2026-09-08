@@ -48,7 +48,7 @@ export function ContactForm({ propiedadId, titulo = "Enviar consulta" }: Contact
   if (estado === "ok") {
     return (
       <div className="bg-cream border border-gold-light rounded-xl p-6 text-center">
-        <p className="font-display text-lg text-charcoal mb-1">¡Gracias por tu consulta!</p>
+        <p className="texto-titulo text-lg mb-1">¡Gracias por tu consulta!</p>
         <p className="text-sm text-text/70">Te vamos a contactar a la brevedad.</p>
       </div>
     );
@@ -56,7 +56,7 @@ export function ContactForm({ propiedadId, titulo = "Enviar consulta" }: Contact
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="bg-white border border-gold-light/50 rounded-xl p-6 space-y-4">
-      <h3 className="font-display text-lg text-charcoal">{titulo}</h3>
+      <h3 className="texto-titulo text-lg">{titulo}</h3>
 
       <input type="hidden" {...register("propiedadId")} />
 

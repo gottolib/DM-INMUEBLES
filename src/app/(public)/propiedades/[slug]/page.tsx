@@ -70,9 +70,9 @@ export default async function PropiedadDetallePage({ params }: PageProps) {
                 {propiedad.codigo}
               </span>
             </div>
-            <h1 className="font-display text-3xl sm:text-4xl text-charcoal mb-2">{propiedad.titulo}</h1>
+            <h1 className="texto-titulo text-3xl sm:text-4xl mb-2">{propiedad.titulo}</h1>
             <p className="text-text/60 mb-4">{ubicacion}</p>
-            <p className="font-display text-2xl text-gold-dark font-semibold mb-8">
+            <p className="texto-precio text-2xl font-semibold mb-8">
               {formatPrecio(propiedad.precio, propiedad.moneda, propiedad.consultarPrecio)}
             </p>
 
@@ -80,17 +80,17 @@ export default async function PropiedadDetallePage({ params }: PageProps) {
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-10 bg-cream rounded-xl p-5">
                 {datos.map((d) => (
                   <div key={d.label}>
-                    <p className="text-xs uppercase tracking-wide text-charcoal/50">{d.label}</p>
-                    <p className="font-medium text-charcoal">{d.valor}</p>
+                    <p className="texto-caracteristica text-xs uppercase tracking-wide opacity-60">{d.label}</p>
+                    <p className="texto-caracteristica font-medium">{d.valor}</p>
                   </div>
                 ))}
               </div>
             )}
 
-            <h2 className="font-display text-xl text-charcoal mb-3">Descripción</h2>
+            <h2 className="texto-titulo text-xl mb-3">Descripción</h2>
             <p className="text-text/75 leading-relaxed whitespace-pre-line mb-10">{propiedad.descripcion}</p>
 
-            <h2 className="font-display text-xl text-charcoal mb-3">Ubicación</h2>
+            <h2 className="texto-titulo text-xl mb-3">Ubicación</h2>
             <div className="rounded-xl overflow-hidden border border-gold-light/50 aspect-[16/9]">
               <iframe src={mapaSrc} title="Ubicación de la propiedad" className="w-full h-full border-0" loading="lazy" referrerPolicy="no-referrer-when-downgrade" />
             </div>

@@ -15,8 +15,8 @@ export default async function ContactoPage() {
   return (
     <div className="container-site py-14">
       <div className="max-w-2xl mb-12">
-        <p className="text-xs uppercase tracking-[0.2em] text-gold-dark font-semibold mb-2">Contacto</p>
-        <h1 className="font-display text-3xl sm:text-4xl text-charcoal mb-3">Hablemos</h1>
+        <p className="texto-subtitulo text-xs uppercase tracking-[0.2em] font-semibold mb-2">Contacto</p>
+        <h1 className="texto-titulo text-3xl sm:text-4xl mb-3">Hablemos</h1>
         <p className="text-text/60">Escribinos por WhatsApp o completá el formulario y te respondemos a la brevedad.</p>
       </div>
 

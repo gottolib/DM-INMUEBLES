@@ -26,8 +26,8 @@ export default async function QuienesSomosPage() {
     <div>
       <section className="bg-charcoal text-cream">
         <div className="container-site py-16 sm:py-20 text-center max-w-2xl mx-auto">
-          <p className="text-xs uppercase tracking-[0.2em] text-gold-light font-semibold mb-3">Quiénes somos</p>
-          <h1 className="font-display text-3xl sm:text-4xl text-white mb-5">Nuestra historia</h1>
+          <p className="fuente-subtitulo text-xs uppercase tracking-[0.2em] text-gold-light font-semibold mb-3">Quiénes somos</p>
+          <h1 className="fuente-titulo text-3xl sm:text-4xl text-white mb-5">Nuestra historia</h1>
           <p className="text-cream/75 leading-relaxed whitespace-pre-line">{config.textoQuienesSomos}</p>
         </div>
       </section>
@@ -35,14 +35,14 @@ export default async function QuienesSomosPage() {
       <section className="container-site py-16 grid grid-cols-1 sm:grid-cols-3 gap-8">
         {VALORES.map((v) => (
           <div key={v.titulo} className="text-center border border-gold-light/50 rounded-xl p-8 bg-cream">
-            <h3 className="font-display text-xl text-charcoal mb-2">{v.titulo}</h3>
+            <h3 className="texto-titulo text-xl mb-2">{v.titulo}</h3>
             <p className="text-sm text-text/65 leading-relaxed">{v.texto}</p>
           </div>
         ))}
       </section>
 
       <section className="container-site pb-20">
-        <h2 className="font-display text-2xl text-charcoal text-center mb-10">Nuestro equipo</h2>
+        <h2 className="texto-titulo text-2xl text-center mb-10">Nuestro equipo</h2>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-4xl mx-auto">
           {EQUIPO.map((persona) => (
             <div key={persona.nombre} className="text-center">
